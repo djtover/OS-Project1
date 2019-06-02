@@ -35,6 +35,7 @@ int main(){
     }
 
     pid = fork();
+    printf("pid = %d",pid);
     if( pid == 0){
         read(pipe1[0], preMd5,msgSize);
         output = md5(preMd5);
