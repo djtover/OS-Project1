@@ -7,16 +7,14 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/fcntl.h>
-// #include <cstring>
-// #include <iostream>
+
 #include "md5.h"
-// #include <cstring>
-// #include <iostream>
+
 
 #define msgSize 20
 #define md5Size 32
-char output[32];
-void sigMd5(){
+char *output[32];
+void sigMd5(int sig){
     signal(SIGINT,sigMd5);
     if(strlen(output) == 32){
         printf("encrypted by process %d : %s\n",getpid(),output);
@@ -28,7 +26,7 @@ int main(){
     char input[msgSize];
     char preMd5[msgSize];
     char postMd5[md5Size];
-    char* hash;
+    // string hash;
 
     int pipe1[2],pipe2[2];
     int pid,nbytes;
@@ -40,7 +38,7 @@ int main(){
     pid = fork();
     if( pid == 0){
         read(pipe1[0], preMd5,msgSize);
-        hash = md5(preMd5);
+         output = md5(preMd5);
         write(pipe2[1], postMd5,md5Size);
         pid_t parent = getppid();
 
@@ -50,7 +48,6 @@ int main(){
         fgets(input,msgSize,stdin);
         write(pipe1[1],input,msgSize+1);
         read(pipe2[0],output,md5Size);
-        // wait(NULL);
         exit(0);
     }
     else{
